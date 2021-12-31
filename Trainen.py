@@ -1,8 +1,6 @@
-import face_recognition as fr
-import cv2
-import numpy as np
 import os
 import pickle
+import face_recognition as fr
 
 
 class Trainen():
@@ -46,37 +44,6 @@ class Trainen():
                     else:
                         print(person + "/" + person_img + " can't be used for training")
 
-    def draw_rect(self, inp_afb, outp_afb):
-        """
-        Goed om een test uit te voeren.
-        Zal een afbeelding maken waar alle herkende gezichten omcirkeld zijn met naam erbij.
-        :param inp_afb: Afbeelding met meerdere gezichten om te herkennen.
-        :param outp_afb: inp_afb met herkende gezichten omcirkeld en naam toegevoegd.
-        """
-        image = cv2.imread(inp_afb)
-        # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
-        face_locations = fr.face_locations(image)
-        face_encodings = fr.face_encodings(image, face_locations)
-
-        for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
-            matches = fr.compare_faces(self.known_name_encodings, face_encoding)
-            name = ""
-
-            face_distances = fr.face_distance(self.known_name_encodings, face_encoding)
-            best_match = np.argmin(face_distances)
-
-            if matches[best_match]:
-                name = self.known_names[best_match]
-                print(f"{name} gevonden in {inp_afb}")
-
-            cv2.rectangle(image, (left, top), (right, bottom), (0, 0, 255), 2)
-            cv2.rectangle(image, (left, bottom - 15), (right, bottom), (0, 0, 255), cv2.FILLED)
-            font = cv2.FONT_HERSHEY_DUPLEX
-            cv2.putText(image, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
-
-        cv2.imwrite(outp_afb, image)
-
     def export_faces(self, outp_path: str):
         export_data = {
             "known_names": self.known_names,
@@ -100,11 +67,11 @@ if __name__ == "__main__":
     oTraining = Trainen()
     oTraining.train("./Trainen/gezichten/")
     oTraining.export_faces("./Trainen/")
-    oTraining.draw_rect("./Trainen/test1.jpg", "./Trainen/_test1.jpg")
-    oTraining.draw_rect("./Trainen/test2.jpeg", "./Trainen/_test2.jpg")
-    oTraining.draw_rect("./Trainen/test5.jpg", "./Trainen/_test5.jpg")
+    # oTraining.draw_rect("./Trainen/test1.jpg", "./Trainen/_test1.jpg")
+    # oTraining.draw_rect("./Trainen/test2.jpeg", "./Trainen/_test2.jpg")
+    # oTraining.draw_rect("./Trainen/test5.jpg", "./Trainen/_test5.jpg")
 
     oTraining2 = Trainen()
     oTraining2.import_faces("./Trainen/face_encodings.pickle")
-    oTraining.draw_rect("./Trainen/test3.jpg", "./Trainen/_test3.jpg")
-    oTraining.draw_rect("./Trainen/test4.jpg", "./Trainen/_test4.jpg")
+    # oTraining.draw_rect("./Trainen/test3.jpg", "./Trainen/_test3.jpg")
+    # oTraining.draw_rect("./Trainen/test4.jpg", "./Trainen/_test4.jpg")
