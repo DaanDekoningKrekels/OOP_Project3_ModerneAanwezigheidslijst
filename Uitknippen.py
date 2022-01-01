@@ -8,8 +8,7 @@ from matplotlib import pyplot as plt
 class Uitknippen():
     FILE_TYPES = ('.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG')
 
-    def __init__(self, dest_path: str, max_dimension: int = 200, simple_crop: bool = True):
-        self.dest_path = dest_path
+    def __init__(self, max_dimension: int = 200, simple_crop: bool = True):
         self.max_dimension = max_dimension
         self.simple_crop = simple_crop
         self.face_detector = dlib.get_frontal_face_detector()
@@ -30,7 +29,7 @@ class Uitknippen():
         except:
             return False
 
-    def cropFaces(self):
+    def cropFaces(self, dest_path: str):
         filename_inc = 100
 
         filecount = 1
@@ -63,12 +62,12 @@ class Uitknippen():
                     cropped_image = image_to_crop.crop(crop_area)
                     crop_size = (self.max_dimension, self.max_dimension)
                     cropped_image.thumbnail(crop_size)
-                    cropped_image.save(self.dest_path + "/" + str(filename_inc) + ".jpg", "JPEG")
+                    cropped_image.save(dest_path + "/" + str(filename_inc) + ".jpg", "JPEG")
                     filename_inc += 1
             filecount += 1
 
 
 if __name__ == "__main__":
-    oUitknippen = Uitknippen("./Uitknippen/cropped/")
+    oUitknippen = Uitknippen()
     oUitknippen.findFiles("./Uitknippen/source/")
-    oUitknippen.cropFaces()
+    oUitknippen.cropFaces("./Uitknippen/cropped/")
