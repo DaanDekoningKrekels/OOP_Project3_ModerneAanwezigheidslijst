@@ -12,7 +12,16 @@ class Oplijsten():
     def __init__(self, training: Trainen):
         self.training = training
 
-    def find_matches(self, inp_afb, datum: datetime.date, draw_rect=False, get_list=False):
+    def _find_matches(self, inp_afb: str, datum: datetime.date, draw_rect=False, get_list=False):
+        """
+        Vind gezichten in de aangegeven afbeelding en vergelijkt ze met de encodings in de Trainen instantie.
+        Kan een kader teken rond de gevonden personen of een lijst samenstellen.
+        De datum komt in de hoek van de afbeelding en bovenaan de aanwezigheidslijst.
+        :param inp_afb: Afbeelding met mensen die we willen herkennen.
+        :param datum: Datum van de vergadering.
+        :param draw_rect: False of het pad naar de locatie voor het uitgangsbestand.
+        :param get_list: False of het pad naar de locatie voor de aanwezigheidslijst.
+        """
         image = cv2.imread(inp_afb)
         # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
@@ -51,19 +60,34 @@ class Oplijsten():
                 cv2.imwrite(draw_rect, image)
 
     def draw_rect(self, inp_afb, outp_afb, datum: datetime.date):
-        """
+        """ Gebruikt _find_matches()
         Goed om een test uit te voeren.
         Zal een afbeelding maken waar alle herkende gezichten omcirkeld zijn met naam erbij.
-        :param inp_afb: Afbeelding met meerdere gezichten om te herkennen.
-        :param outp_afb: inp_afb met herkende gezichten omcirkeld en naam toegevoegd.
+        :param inp_afb: Afbeelding met mensen die we willen herkennen.
+        :param outp_afb: Pad naar inp_afb met herkende gezichten omcirkeld en naam toegevoegd.
+        :param datum: Datum van de vergadering.
         """
-        self.find_matches(inp_afb, datum, draw_rect=outp_afb)
+        self._find_matches(inp_afb, datum, draw_rect=outp_afb)
 
     def get_list(self, inp_afb, outp_file, datum: datetime.date):
-        self.find_matches(inp_afb, datum, get_list=outp_file)
+        """ Gebruikt _find_matches()
+        Laat je een aanwezigheidslijst genereren in CSV formaat.
+        :param inp_afb: Afbeelding met mensen die we willen herkennen.
+        :param outp_file: Pad naar de locatie voor de aanwezigheidslijst.
+        :param datum: Datum van de vergadering.
+        """
+        self._find_matches(inp_afb, datum, get_list=outp_file)
 
     def get_list_draw_rect(self, inp_afb, outp_afb, outp_file, datum: datetime.date):
-        self.find_matches(inp_afb, datum, draw_rect=outp_afb, get_list=outp_file)
+        """ Gebruikt _find_matches()
+        Zal een afbeelding maken waar alle herkende gezichten omcirkeld zijn met naam erbij
+        en zal een aanwezigheidslijst genereren in CSV formaat.
+        :param inp_afb: Afbeelding met mensen die we willen herkennen.
+        :param outp_afb: Pad naar inp_afb met herkende gezichten omcirkeld en naam toegevoegd.
+        :param outp_file: Pad naar de locatie voor de aanwezigheidslijst.
+        :param datum: Datum van de vergadering.
+        """
+        self._find_matches(inp_afb, datum, draw_rect=outp_afb, get_list=outp_file)
 
 
 if __name__ == "__main__":

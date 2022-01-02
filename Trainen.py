@@ -10,11 +10,11 @@ class Trainen():
         self.known_names = []
         self.known_name_encodings = []
 
-    def train(self, inp_path):
+    def train(self, inp_path: str):
         """
         Zal de mappen in inp_path scannen op afbeeldingen met gezichten en
         daar de encodings van opslaan in een lijst.
-        :param inp_path: str Pad mappen die genoemd zijn naar de persoon waarvan het gezicht in de map zit.
+        :param inp_path: str Pad naar mappen die genoemd zijn naar de persoon waarvan het gezicht in de map zit.
         """
         # Training directory
         if inp_path[-1] != '/':
@@ -45,6 +45,10 @@ class Trainen():
                         print(person + "/" + person_img + " can't be used for training")
 
     def export_faces(self, outp_path: str):
+        """
+        Exporteer de namen en gezichtsencodings naar een bestand.
+        :param outp_path: Plaats om het pickle bestand op te slaan.
+        """
         export_data = {
             "known_names": self.known_names,
             "known_name_encodings": self.known_name_encodings
@@ -55,6 +59,11 @@ class Trainen():
         print("Export opgeslagen in: " + outp_path + "face_encodings.pickle")
 
     def import_faces(self, pickle_path: str):
+        """
+        Importeert namen en gezichtsencodings in de klasse om later te gebruiken.
+        Dit bespaart veel rekenkracht in vergelijking met iedere keer opnieuw de encodings te berekenen.
+        :param pickle_path: Pad naar het .pickle bestand.
+        """
         with open(pickle_path, "rb") as fh:
             import_data = pickle.load(fh)
 

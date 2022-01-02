@@ -9,6 +9,11 @@ class Uitknippen():
     FILE_TYPES = ('.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG')
 
     def __init__(self, max_dimension: int = 200, simple_crop: bool = True):
+        """
+        Klasse die helpt gezichten uit te knippen van afbeeldingen.
+        :param max_dimension: Maximum afmetingen voor uitgesneden gezichten.
+        :param simple_crop: Try it.
+        """
         self.max_dimension = max_dimension
         self.simple_crop = simple_crop
         self.face_detector = dlib.get_frontal_face_detector()
@@ -16,6 +21,11 @@ class Uitknippen():
         self.filenames = []
 
     def findFiles(self, source_path: str, ) -> bool:
+        """
+        Vind de ondersteunde afbeelding bestanden in een meegegeven map.
+        :param source_path: str Map waarin naar afbeeldingen wordt gezocht.
+        :return: bool: True als er niets misging
+        """
         try:
             for file_i in os.listdir(source_path):
                 if file_i.endswith(Uitknippen.FILE_TYPES):
@@ -30,8 +40,11 @@ class Uitknippen():
             return False
 
     def cropFaces(self, dest_path: str):
+        """ https://gist.github.com/mcclux/afb41e8217c83fb15173f76effaf2345
+        Knip de gevonden gezichten uit naar een bepaalde map.
+        :param dest_path: Map om alle gevonden gezichten in te plaatsen.
+        """
         filename_inc = 100
-
         filecount = 1
 
         for file in self.filenames:
