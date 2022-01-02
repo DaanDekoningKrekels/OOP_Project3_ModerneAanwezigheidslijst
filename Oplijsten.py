@@ -9,7 +9,8 @@ from Trainen import Trainen
 
 
 class Oplijsten():
-    def __init__(self, training: Trainen):
+    def __init__(self, training: Trainen, report=None):
+        self.report = report
         self.training = training
 
     def _find_matches(self, inp_afb: str, datum: datetime.date, draw_rect=False, get_list=False):
@@ -46,7 +47,10 @@ class Oplijsten():
 
             if matches[best_match]:
                 name = self.training.known_names[best_match]
-                print(f"{name} gevonden in {inp_afb}")
+                outputting = f"{name} gevonden in {inp_afb}"
+                print(outputting)
+                if self.report is not None:
+                    self.report.print(outputting)
                 if get_list:
                     with open(get_list, mode='a+') as leden_file:
                         ledenlijst = csv.writer(leden_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)

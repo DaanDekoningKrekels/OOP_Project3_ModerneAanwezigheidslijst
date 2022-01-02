@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 class Uitknippen():
     FILE_TYPES = ('.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG')
 
-    def __init__(self, max_dimension: int = 200, simple_crop: bool = True):
+    def __init__(self, max_dimension: int = 200, simple_crop: bool = True, report=None):
         """
         Klasse die helpt gezichten uit te knippen van afbeeldingen.
         :param max_dimension: Maximum afmetingen voor uitgesneden gezichten.
@@ -16,6 +16,7 @@ class Uitknippen():
         """
         self.max_dimension = max_dimension
         self.simple_crop = simple_crop
+        self.report = report
         self.face_detector = dlib.get_frontal_face_detector()
         self.files = []
         self.filenames = []
@@ -33,8 +34,10 @@ class Uitknippen():
 
             for fname in self.files:
                 self.filenames.append(os.path.join(source_path, fname))
-
-            print('found %d files' % len(self.filenames))
+            outputting = '%d bestanden gevonden.' % len(self.filenames)
+            print(outputting)
+            if self.report is not None:
+                self.report.print(outputting)
             return True
         except:
             return False
@@ -50,7 +53,11 @@ class Uitknippen():
         for file in self.filenames:
             img = plt.imread(file)
             detected_faces = self.face_detector(img, 1)
-            print("[%d of %d] %d detected faces in %s" % (filecount, len(self.filenames), len(detected_faces), file))
+            outputting = "[%d of %d] %d detected faces in %s" % (
+                filecount, len(self.filenames), len(detected_faces), os.path.basename(file))
+            print(outputting)
+            if self.report is not None:
+                self.report.print(outputting)
             for i, face_rect in enumerate(detected_faces):
                 width = face_rect.right() - face_rect.left()
                 height = face_rect.bottom() - face_rect.top()

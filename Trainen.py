@@ -6,7 +6,8 @@ import face_recognition as fr
 class Trainen():
     FILE_TYPES = ('.jpg', '.JPG', '.jpeg', '.JPEG')
 
-    def __init__(self):
+    def __init__(self, report=None):
+        self.report = report
         self.known_names = []
         self.known_name_encodings = []
 
@@ -23,26 +24,34 @@ class Trainen():
 
         # Loop through each person in the training directory
         for person in train_dir:
-            pix = os.listdir(inp_path + person)
+            if os.path.isdir(inp_path + person):
+                pix = os.listdir(inp_path + person)
 
-            # Loop through each training image for the current person
-            for person_img in pix:
-                if person_img.endswith(Trainen.FILE_TYPES):
-                    # Get the face encodings for the face in each image file
-                    face = fr.load_image_file(
-                        inp_path + person + "/" + person_img)
-                    face_bounding_boxes = fr.face_locations(face)
+                # Loop through each training image for the current person
+                for person_img in pix:
+                    if person_img.endswith(Trainen.FILE_TYPES):
+                        # Get the face encodings for the face in each image file
+                        face = fr.load_image_file(
+                            inp_path + person + "/" + person_img)
+                        face_bounding_boxes = fr.face_locations(face)
 
-                    # If training image contains exactly one face
-                    if len(face_bounding_boxes) == 1:
-                        face_enc = fr.face_encodings(face)[0]
-                        # Add face encoding for current image
-                        # with corresponding label (name) to the training data
-                        self.known_names.append(person)
-                        self.known_name_encodings.append(face_enc)
-                        print(person + "/" + person_img + " toegevoegd!")
-                    else:
-                        print(person + "/" + person_img + " can't be used for training")
+                        # If training image contains exactly one face
+                        if len(face_bounding_boxes) == 1:
+                            face_enc = fr.face_encodings(face)[0]
+                            # Add face encoding for current image
+                            # with corresponding label (name) to the training data
+                            self.known_names.append(person)
+                            self.known_name_encodings.append(face_enc)
+                            outputting = person + "/" + person_img + " toegevoegd!"
+                            print(outputting)
+                            if self.report is not None:
+                                self.report.print(outputting)
+
+                        else:
+                            outputting = person + "/" + person_img + " can't be used for training"
+                            print(outputting)
+                            if self.report is not None:
+                                self.report.print(outputting)
 
     def export_faces(self, outp_path: str):
         """
@@ -56,7 +65,10 @@ class Trainen():
         with open(outp_path + "face_encodings.pickle", "wb") as fh:
             pickle.dump(export_data, fh)
 
-        print("Export opgeslagen in: " + outp_path + "face_encodings.pickle")
+        outputting = "Export opgeslagen in: " + outp_path + "face_encodings.pickle"
+        print(outputting)
+        if self.report is not None:
+            self.report.print(outputting)
 
     def import_faces(self, pickle_path: str):
         """
@@ -69,18 +81,16 @@ class Trainen():
 
         self.known_names = import_data["known_names"]
         self.known_name_encodings = import_data["known_name_encodings"]
-        print(f"{pickle_path} geïmporteerd.")
+        outputting = f"{pickle_path} geïmporteerd."
+        print(outputting)
+        if self.report is not None:
+            self.report.print(outputting)
 
 
 if __name__ == "__main__":
     oTraining = Trainen()
     oTraining.train("./Trainen/gezichten/")
     oTraining.export_faces("./Trainen/")
-    # oTraining.draw_rect("./Trainen/test1.jpg", "./Trainen/_test1.jpg")
-    # oTraining.draw_rect("./Trainen/test2.jpeg", "./Trainen/_test2.jpg")
-    # oTraining.draw_rect("./Trainen/test5.jpg", "./Trainen/_test5.jpg")
 
     oTraining2 = Trainen()
     oTraining2.import_faces("./Trainen/face_encodings.pickle")
-    # oTraining.draw_rect("./Trainen/test3.jpg", "./Trainen/_test3.jpg")
-    # oTraining.draw_rect("./Trainen/test4.jpg", "./Trainen/_test4.jpg")
