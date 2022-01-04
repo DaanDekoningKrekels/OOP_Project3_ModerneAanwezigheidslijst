@@ -16,6 +16,7 @@ class ModerneAanwezigheidslijst(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow)
     def __init__(self, parent=None):
         super(ModerneAanwezigheidslijst, self).__init__(parent)
         self.setupUi(self)
+        self.setWindowTitle("Moderne Aanwezigheidslijst")
         self.statusbar.showMessage("Daan Dekoning Krekels | 2ITIOT | Python OOP | 2021-2022")
         # Acties toevoegen aan knoppen
         self.actionStartGezichtenUitknippen.triggered.connect(self.uitknippen)
