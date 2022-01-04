@@ -2,7 +2,7 @@ import os
 import sys
 import datetime
 
-from PyQt6 import QtWidgets
+from PyQt6 import QtWidgets, QtCore
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QApplication, QMessageBox, QFileDialog, QInputDialog
 
@@ -136,11 +136,20 @@ class ModerneAanwezigheidslijst(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow)
         :return: False als er iets misgaat
         """
         self.print("---AANWEZIGEN OPLIJSTEN---")
+        if len(self.trainer.known_names) == 0:
+            mededeling = "Train of importeer eerst gezichten!"
+            self.print(mededeling)
+            QMessageBox.warning(self, "Geen gezichtsencodings ingeladen!", mededeling)
+            return False
         opties = ["Aanwezigheidslijst opstellen", "Personen op foto omcirkelen", "Beide opties"]
         keuze, ok = QInputDialog.getItem(self, 'getItem', 'Wat wilt u doen?', opties, 0, False)
         if ok and keuze:
             if keuze == opties[0] or keuze == opties[1] or keuze == opties[2]:
                 # Bij alle opties:
+                datum, ok = self._datumvenster()
+                if not ok:
+                    return False
+
                 mededeling = "Geef het pad naar de afbeelding met de aanwezigen"
                 QMessageBox.information(self, "Afbeelding aanduiden", mededeling)
                 inp_afb, _ = QFileDialog.getOpenFileName(self, mededeling,
@@ -160,7 +169,7 @@ class ModerneAanwezigheidslijst(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow)
                 if keuze == opties[0]:
                     # Enkel bij Aanwezigheidslijst
                     QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
-                    self.oplijster.get_list(inp_afb, outp_csv, datetime.date.today())
+                    self.oplijster.get_list(inp_afb, outp_csv, datetime.date(datum.year(), datum.month(), datum.day()))
                     QApplication.restoreOverrideCursor()
             if keuze == opties[1] or keuze == opties[2]:
                 # Bij Omcirkelen of Beide opties
@@ -173,13 +182,31 @@ class ModerneAanwezigheidslijst(QtWidgets.QMainWindow, MainWindow.Ui_MainWindow)
                 if keuze == opties[1]:
                     # Enkel bij Omcirkelen
                     QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
-                    self.oplijster.draw_rect(inp_afb, outp_abf, datetime.date.today())
+                    self.oplijster.draw_rect(inp_afb, outp_abf, datetime.date(datum.year(), datum.month(), datum.day()))
                     QApplication.restoreOverrideCursor()
             if keuze == opties[2]:
                 # Enkel bij Beide opties
                 QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
-                self.oplijster.get_list_draw_rect(inp_afb, outp_abf, outp_csv, datetime.date.today())
+                self.oplijster.get_list_draw_rect(inp_afb, outp_abf, outp_csv,
+                                                  datetime.date(datum.year(), datum.month(), datum.day()))
                 QApplication.restoreOverrideCursor()
+
+    def _datumvenster(self):
+        dateedit = QtWidgets.QDateEdit(calendarPopup=True)
+        # self.menuBar().setCornerWidget(self.dateedit, QtCore.Qt.Corner.TopLeftCorner)
+        dateedit.setDateTime(QtCore.QDateTime.currentDateTime())
+
+        dlg = QMessageBox(self)
+        dlg.setWindowTitle("Datum van vergadering")
+        dlg.setText("Geef de datum van de vergadering in.")
+        dlg.layout().addWidget(dateedit)
+        dlg.setStandardButtons(QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)
+        button = dlg.exec()
+        ok = False
+        if button == QMessageBox.StandardButton.Ok:
+            ok = True
+
+        return dateedit.date(), ok
 
 
 if __name__ == '__main__':
