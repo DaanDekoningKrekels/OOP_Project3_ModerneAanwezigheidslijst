@@ -4,7 +4,6 @@ Deze repo bevat klasses om een moderne aanwezigheidslijst op te stellen aan de h
 
 Bibliotheken: `PyQt6`, `dlib` `matplotlib`, `face_recognition`, `numpy`, `pickle`
 
-
 `programma2.py` is een PyQt6 GUI-applicatie waarin de werking wordt gedemonstreerd. HEt herkenningsproces bestaat uit 3
 onderdelen.
 
@@ -12,7 +11,7 @@ onderdelen.
 2. Trainen
 3. Oplijsten
 
-![Screenshot PyQt6 interface](./assets/programma2.png)
+![Screenshot PyQt6 interface](./assets/Programma2.png)
 
 ## Uitknippen
 
